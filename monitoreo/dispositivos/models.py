@@ -1,9 +1,13 @@
 from django.db import models
+from django.utils import timezone
+from .models import Categoria, Zona 
 
 class Dispositivo(models.Model):
     nombre = models.CharField(max_length=100)
-    consumo = models.IntegerField()
-    estado = models.BooleanField(default=True)
-    
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    zona = models.ForeignKey(Zona, on_delete=models.CASCADE)
+    consumo_maximo_w = models.IntegerField(help_text="Consumo máximo permitido en Watts.")
+    estado = models.BooleanField(default=True, help_text="Indica si el dispositivo está activo.")
+
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} ({self.zona.nombre})"
