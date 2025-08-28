@@ -1,46 +1,22 @@
 from django.shortcuts import render
+# Import the models you want to use
+from .models import Dispositivo, Medicion 
 
-# Create your views here.
 def inicio(request):
-    contexto = {"nombre": "Alan"}
-    productos = [
-        {"nombre": "Sensor 1", "valor": 100},
-        {"nombre": "Sensor 2", "valor": 200},
-        {"nombre": "Sensor 3", "valor": 300}     
-    ]
-    
-    return render(request, "dispositivos/inicio.html", {
-        "contexto": contexto,
-        "productos": productos
-        })
-    
+    # This view remains the same for now.
+    return render(request, "dispositivos/inicio.html")
+
 def panel_dispositivos(request):
-    dispositivos = [
-        {"nombre": "Sensor Temperatura", "consumo": 50},
-        {"nombre": "Medidor Solar", "consumo": 120},
-        {"nombre": "Sensor Movimiento", "consumo": 30},
-        {"nombre": "Calefactor", "consumo": 200},
-    ]
+    # 1. Get all 'Dispositivo' objects from the database.
+    todos_los_dispositivos = Dispositivo.objects.all()
     
-    consumo_maximo = 100
-    
-    for d in dispositivos:
-        if d["consumo"] > consumo_maximo:
-            d["estado"] = "Exceso"
-            d["color"] = "red"
-        else:
-            d["estado"] = "Correcto"
-            d["color"] = "green"
-    
-    estado_critico = 0
-    for d in dispositivos:
-        if d["estado"] =="Exceso":
-            estado_critico +=1
-            
+    # 2. You can also get other data, for example, the latest measurements.
+    ultimas_mediciones = Medicion.objects.order_by('-timestamp')[:5] # Get the 5 most recent
+
+    # 3. Pass the real data to the template.
     contexto = {
-        "dispositivos": dispositivos,
-        "consumo_maximo": consumo_maximo,
-        "estado_critico": estado_critico
+        "dispositivos": todos_los_dispositivos,
+        "mediciones": ultimas_mediciones,
     }
-    
+
     return render(request, "dispositivos/panel.html", contexto)
